@@ -228,3 +228,6 @@ pyrightconfig.json
 # Ignore all log files
 *.log
 logs/
+
+# Ignore all data files
+data/
