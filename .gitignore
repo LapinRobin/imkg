@@ -231,3 +231,4 @@ logs/
 
 # Ignore all data files
 data/
+notebook/data/
