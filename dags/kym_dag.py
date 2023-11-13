@@ -264,9 +264,9 @@ enrich_text_spotlight = PythonOperator(
 )
 
 def enrich_text_tag_spotlight():
-    spotlight_enrichment_raw = 'data/kym.spotlight.raw.json'
+    spotlight_enrichment_raw = 'data/kym.spotlight.raw.tags.json'
 
-    get_textual_entities('data/kym.media.frames.csv', 'data/raw/kym.spotlight.raw.tags.json', 'data/kym.media.frames.tags.enrichment.json')
+    get_textual_entities('data/kym.media.frames.csv', spotlight_enrichment_raw, 'data/kym.media.frames.tags.enrichment.json')
 
 enrich_text_tag_spotlight = PythonOperator(
     task_id='enrich_text_tag_spotlight',
