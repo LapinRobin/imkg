@@ -212,6 +212,69 @@ join_tasks = DummyOperator(
     trigger_rule='none_failed'
 )
 
+def get_textual_entities(infile,entity_file,outfile):
+    memes_entities = []
+    cache = []
+    errors = []
+    with open(infile) as csvfile:
+        urls = reader(csvfile)
+        #Loading file with dbpedia entities
+        with open(entity_file) as efile:
+            data = json.load(efile)
+            #Mapping DBPedia entities to Wikidata
+            with open('data/dbpedia-wikidata.json') as jsonfile:
+                db2wdmapping = json.load(jsonfile)
+                for row in urls:
+                    if(row[1] in data.keys() and not row[1] in cache):
+                        cache.append([row[1]])
+                        newdata = data[row[1]]
+                        newdata['url']=row[1]
+                        if("Resources" in newdata.keys()):
+                            for r in newdata["Resources"]:
+                                res = r['@URI'].replace('http://dbpedia.org/resource/','')
+                                if(res in db2wdmapping.keys()):
+                                    r['QID'] = 'https://www.wikidata.org/wiki/'+db2wdmapping[res]                       
+                                if(type(r["@types"])==str):
+                                    ls = r["@types"].replace("DUL:", "http://www.loa-cnr.it/ontologies/DOLCE-Lite#").replace("Wikidata:", "https://www.wikidata.org/wiki/").replace("Schema:", "https://schema.org/").split(",")
+                                    ls = list(filter(None, ls))
+                                    ls = [l for l in ls if 'DBpedia' not in l]
+                                # elif(type(r["@types"])==list):
+                                    # ls = list(map(lambda s: s.replace("DUL:", "http://www.loa-cnr.it/ontologies/DOLCE-Lite#").replace("Wikidata:", "https://www.wikidata.org/wiki/").replace("Schema:", "https://schema.org/").replace("DBpedia:", ""),r["@types"]))
+                                    # errors.append([row[1],res,r["@types"]])
+                                #Removing dbpedia types that do not have a correspondence in wikidata
+                                for l in ls:
+                                    if(l in db2wdmapping.keys()):
+                                        l = 'https://www.wikidata.org/wiki/'+db2wdmapping[l]     
+                                r["@typeList"]=ls
+                        memes_entities.append(data[row[1]])
+    save2json(outfile, memes_entities)
+    save2csv('errors.csv',['kym','entity','@types'],errors)
+
+
+def enrich_text_spotlight():
+    spotlight_enrichment_raw = 'data/kym.spotlight.raw.json'
+
+    get_textual_entities('data/kym.media.frames.csv', spotlight_enrichment_raw, 'data/kym.media.frames.textual.enrichment.json')
+
+enrich_text_spotlight = PythonOperator(
+    task_id='enrich_text_spotlight',
+    dag=kym_dag,
+    python_callable=enrich_text_spotlight,
+    trigger_rule='all_success',
+)
+
+def enrich_text_tag_spotlight():
+    spotlight_enrichment_raw = 'data/kym.spotlight.raw.json'
+
+    get_textual_entities('data/kym.media.frames.csv', 'data/raw/kym.spotlight.raw.tags.json', 'data/kym.media.frames.tags.enrichment.json')
+
+enrich_text_tag_spotlight = PythonOperator(
+    task_id='enrich_text_tag_spotlight',
+    dag=kym_dag,
+    python_callable=enrich_text_tag_spotlight,
+    trigger_rule='all_success',
+)
+
 end = DummyOperator(
     task_id='end',
     dag=kym_dag,
@@ -221,4 +284,6 @@ end = DummyOperator(
 file_sensor >> insert_json_file_task 
 insert_json_file_task >> load_data_from_Mongo
 load_data_from_Mongo >> cleaning_raw_data
-cleaning_raw_data >> [extract_related_siblings, extract_related_parent, extract_related_children, extract_taxonomy] >> join_tasks >> end
+cleaning_raw_data >> [extract_related_siblings, extract_related_parent, extract_related_children, extract_taxonomy] >> join_tasks 
+join_tasks >> enrich_text_spotlight 
+enrich_text_spotlight >> enrich_text_tag_spotlight >> end
