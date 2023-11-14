@@ -50,4 +50,3 @@ If you'd like to run the code for this project, follow these steps:
    docker compose -f docker-compose.yaml up
    ```
 
-   
