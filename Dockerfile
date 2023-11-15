@@ -1,4 +1,4 @@
-FROM apache/airflow:2.7.2
+FROM apache/airflow
 
 # Install a java runtime environment
 USER root

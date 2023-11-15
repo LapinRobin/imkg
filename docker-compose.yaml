@@ -330,19 +330,6 @@ services:
       start_period: 10s
     restart: always
 
-  mongo-express:
-    image: mongo-express:latest
-    environment:
-      ME_CONFIG_MONGODB_SERVER: mongo
-    ports:
-      - "8081:8081"
-    healthcheck:
-      test: [ "CMD", "nc", "-z", "mongo", "27017" ]
-      interval: 10s
-      retries: 5
-      start_period: 10s
-    restart: always
-
   jupyter-hub:
     image: jupyterhub/singleuser
     volumes:
@@ -350,23 +337,6 @@ services:
     ports:
       - "8888:8888"
     restart: always
-
-  scraper:
-    build:
-      context: ./scraping/kym-scrapper
-      dockerfile: Dockerfile
-    environment:
-      - MONGO_URL=mongodb://mongo:27017
-      - MONGO_DB=airflow
-      - MONGO_COLLECTION=memes
-      - REDIS_URL=redis://redis:6379/
-      - REDIS_PORT=6379
-      - POSTGRES_USER=airflow
-      - POSTGRES_PASSWORD=airflow
-      - POSTGRES_DB=airflow
-      - POSTGRES_HOST=postgres
-    stdin_open: true
-    tty: true
 
   docker-socket-proxy:
     image: tecnativa/docker-socket-proxy:0.1.1
