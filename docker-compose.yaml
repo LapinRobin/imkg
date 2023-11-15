@@ -110,6 +110,8 @@ services:
     image: redis:latest
     expose:
       - 6379
+    ports:
+      - "6379:6379"
     healthcheck:
       test: [ "CMD", "redis-cli", "ping" ]
       interval: 10s
@@ -347,5 +349,37 @@ services:
       - ./notebooks:/home/jovyan/work
     ports:
       - "8888:8888"
+    restart: always
+
+  scraper:
+    build:
+      context: ./scraping/kym-scrapper
+      dockerfile: Dockerfile
+    environment:
+      - MONGO_URL=mongodb://mongo:27017
+      - MONGO_DB=airflow
+      - MONGO_COLLECTION=memes
+      - REDIS_URL=redis://redis:6379/
+      - REDIS_PORT=6379
+      - POSTGRES_USER=airflow
+      - POSTGRES_PASSWORD=airflow
+      - POSTGRES_DB=airflow
+      - POSTGRES_HOST=postgres
+    stdin_open: true
+    tty: true
+
+  docker-socket-proxy:
+    image: tecnativa/docker-socket-proxy:0.1.1
+    environment:
+      CONTAINERS: 1
+      IMAGES: 1
+      AUTH: 1
+      POST: 1
+      NETWORKS: 1
+    privileged: true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    restart: always
+
 volumes:
   postgres-db-volume:
