@@ -1,2 +1,5 @@
 apache-airflow-providers-mongo==3.0.0
 apache-airflow-providers-docker==3.8.1
+apache-airflow-providers-papermill==3.4.0
+jupyterlab==4.0.8
+ipykernel==6.26.0
