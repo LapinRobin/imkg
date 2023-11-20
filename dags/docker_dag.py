@@ -1,25 +1,22 @@
 import airflow
-from airflow import DAG
+from airflow import DAG, utils
 
 from airflow.operators.docker_operator import DockerOperator
 from airflow.utils.dates import days_ago
 from datetime import timedelta
 
+# Define default_args dictionary to set the default parameters of the DAG
 default_args = {
     "owner": "airflow",
-    "depends_on_past": False,
-    "email": ["airflow@example.com"],
-    "email_on_failure": False,
-    "email_on_retry": False,
-    "retries": 1,
-    "retry_delay": timedelta(minutes=5),
+    "start_date": utils.dates.days_ago(0),
+    "retries": 0,
+    "catchup": False,
 }
 
 dag = DAG(
     "kym_scraping_dag",
     default_args=default_args,
     schedule_interval=None,
-    start_date=days_ago(2),
 )
 
 env = {
