@@ -46,8 +46,8 @@ def save2json(filename, dump):
 def extractFromMongo():
     # MongoDB connection details
     mongo_uri = "mongodb://mongo:27017"
-    database_name = "memes"
-    collection_name = "raw_memes"
+    database_name = "imkg"
+    collection_name = "kym"
 
     # Retreive dataset
     client = pymongo.MongoClient(mongo_uri)
@@ -96,4 +96,45 @@ notebook_extract_sibling = PapermillOperator(
     trigger_rule="all_success",
 )
 
-load_data_from_Mongo >> notebook_cleaning >> notebook_extract_seed >> notebook_extract_sibling
+notebook_extract_parent = PapermillOperator(
+    task_id="notebook_extract_parent",
+    input_nb="/opt/airflow/notebooks/Extract_Parent.ipynb",
+    output_nb="/opt/airflow/notebooks/Extract_Parent.ipynb",
+    dag=new_full_kym_dag,
+    trigger_rule="all_success",
+)
+
+notebook_extract_children = PapermillOperator(
+    task_id="notebook_extract_children",
+    input_nb="/opt/airflow/notebooks/Extract_Children.ipynb",
+    output_nb="/opt/airflow/notebooks/Extract_Children.ipynb",
+    dag=new_full_kym_dag,
+    trigger_rule="all_success",
+)
+
+notebook_extract_taxonomy = PapermillOperator(
+    task_id="notebook_extract_taxonomy",
+    input_nb="/opt/airflow/notebooks/Extract_Taxonomy.ipynb",
+    output_nb="/opt/airflow/notebooks/Extract_Taxonomy.ipynb",
+    dag=new_full_kym_dag,
+    trigger_rule="all_success",
+)
+
+join_tasks = DummyOperator(
+    task_id="coalesce_transformations", dag=new_full_kym_dag, trigger_rule="none_failed"
+)
+
+end = DummyOperator(task_id="end", dag=new_full_kym_dag, trigger_rule="none_failed")
+
+load_data_from_Mongo >> notebook_cleaning >> notebook_extract_seed 
+(
+    notebook_extract_seed
+    >> [
+        notebook_extract_sibling,
+        notebook_extract_parent,
+        notebook_extract_children,
+        notebook_extract_taxonomy,
+    ]
+    >> join_tasks
+)
+join_tasks >> end

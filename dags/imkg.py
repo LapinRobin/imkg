@@ -91,6 +91,16 @@ kym_scraper = DockerOperator(
     dag=dag,
 )
 
+kym_sync_children = DockerOperator(
+    task_id="kym_sync_children",
+    image="kym-scraper",
+    command=f"scrapy sync_children",
+    docker_url="TCP://docker-socket-proxy:2375",
+    network_mode="host",
+    environment=kym_env,
+    dag=dag,
+)
+
 # Both scraper tasks are independent of each other.
 imgflip_redis_init >> imgflip_scraper_bootstrap >> imgflip_scraper
-kym_redis_init >> kym_scraper_bootstrap >> kym_scraper
+kym_redis_init >> kym_scraper_bootstrap >> kym_scraper >> kym_sync_children  
