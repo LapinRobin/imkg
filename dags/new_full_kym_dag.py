@@ -120,8 +120,28 @@ notebook_extract_taxonomy = PapermillOperator(
     trigger_rule="all_success",
 )
 
-join_tasks = DummyOperator(
-    task_id="coalesce_transformations", dag=new_full_kym_dag, trigger_rule="none_failed"
+join_tasks_extracts = DummyOperator(
+    task_id="join_tasks_extracts", dag=new_full_kym_dag, trigger_rule="none_failed"
+)
+
+notebook_enrich_text = PapermillOperator(
+    task_id="notebook_enrich_text",
+    input_nb="/opt/airflow/notebooks/Enrich_Text.ipynb",
+    output_nb="/opt/airflow/notebooks/Enrich_Text.ipynb",
+    dag=new_full_kym_dag,
+    trigger_rule="all_success",
+)
+
+notebook_enrich_tags = PapermillOperator(
+    task_id="notebook_enrich_tags",
+    input_nb="/opt/airflow/notebooks/Enrich_Tags.ipynb",
+    output_nb="/opt/airflow/notebooks/Enrich_Tags.ipynb",
+    dag=new_full_kym_dag,
+    trigger_rule="all_success",
+)
+
+join_tasks_enrich = DummyOperator(
+    task_id="join_tasks_enrich", dag=new_full_kym_dag, trigger_rule="none_failed"
 )
 
 end = DummyOperator(task_id="end", dag=new_full_kym_dag, trigger_rule="none_failed")
@@ -135,6 +155,7 @@ load_data_from_Mongo >> notebook_cleaning >> notebook_extract_seed
         notebook_extract_children,
         notebook_extract_taxonomy,
     ]
-    >> join_tasks
+    >> join_tasks_extracts
 )
-join_tasks >> end
+join_tasks_extracts >> notebook_enrich_text >> notebook_enrich_tags >> join_tasks_enrich
+join_tasks_enrich >> end
