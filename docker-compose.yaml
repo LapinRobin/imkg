@@ -83,6 +83,7 @@ x-airflow-common:
     - ${AIRFLOW_PROJ_DIR:-.}/data:/opt/airflow/data
     - ${AIRFLOW_PROJ_DIR:-.}/notebooks:/opt/airflow/notebooks
   user: "${AIRFLOW_UID:-50000}:0"
+  mem_limit: 4GB
   depends_on: &airflow-common-depends-on
     redis:
       condition: service_healthy
