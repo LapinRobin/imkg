@@ -4,6 +4,7 @@ from airflow.operators.python import PythonOperator
 from airflow.operators.dummy import DummyOperator
 from airflow.providers.docker.operators.docker import DockerOperator
 from airflow.operators.papermill_operator import PapermillOperator
+from airflow.operators.bash_operator import BashOperator
 import airflow.utils as utils
 from airflow import DAG
 import pandas as pd
@@ -11,6 +12,7 @@ import pymongo
 import json, csv
 from csv import writer, reader
 import os
+from docker.types import Mount
 
 default_args = {"start_date": utils.dates.days_ago(0), "concurrency": 1, "retries": 0}
 
@@ -144,6 +146,16 @@ join_tasks_enrich = DummyOperator(
     task_id="join_tasks_enrich", dag=new_full_kym_dag, trigger_rule="none_failed"
 )
 
+generate_turtle_files_text_enrich = DockerOperator(
+    task_id='generate_turtle_files_text_enrich',
+    image='rmlio/yarrrml-parser:latest',  # Docker image name and tag
+    command='--rm -it -v $(pwd)/:/data rmlio/yarrrml-parser:latest -i /data/mappings/kym.media.frames.textual.enrichment.yaml >> /data/mappings/kym.media.frames.textual.enrichment.yaml.ttl',
+    api_version='auto',  # You can set the Docker API version if needed
+    auto_remove=True,  # Remove the container after it completes
+    mounts=[Mount(source='/opt/airflow/', target='/data', type='bind')],
+    dag=new_full_kym_dag,
+)
+
 end = DummyOperator(task_id="end", dag=new_full_kym_dag, trigger_rule="none_failed")
 
 load_data_from_Mongo >> notebook_cleaning >> notebook_extract_seed 
@@ -158,4 +170,4 @@ load_data_from_Mongo >> notebook_cleaning >> notebook_extract_seed
     >> join_tasks_extracts
 )
 join_tasks_extracts >> notebook_enrich_text >> notebook_enrich_tags >> join_tasks_enrich
-join_tasks_enrich >> end
+join_tasks_enrich >> generate_turtle_files_text_enrich >> end

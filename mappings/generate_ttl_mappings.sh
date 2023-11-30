@@ -6,4 +6,9 @@
  
 #done
 
-docker run --rm -it -v $(pwd)/:/data rmlio/yarrrml-parser:latest -i /data/kym.seed.media.frames.textual.enrichment.yaml >> mappings/kym.seed.media.frames.textual.enrichment.yaml.ttl
+docker run --rm -it -v $(pwd)/:/data rmlio/yarrrml-parser:latest -i /data/mappings/kym.media.frames.textual.enrichment.yaml >> mappings/kym.media.frames.textual.enrichment.yaml.ttl
+docker run --rm -it -v $(pwd)/:/data rmlio/yarrrml-parser:latest -i /data/mappings/kym.media.frames.yaml >> mappings/kym.media.frames.yaml.ttl
+docker run --rm -it -v $(pwd)/:/data rmlio/yarrrml-parser:latest -i /data/mappings/kym.parent.media.frames.yaml >> mappings/kym.parent.media.frames.yaml.ttl
+docker run --rm -it -v $(pwd)/:/data rmlio/yarrrml-parser:latest -i /data/mappings/kym.children.media.frames.yaml >> mappings/kym.children.media.frames.yaml.ttl
+docker run --rm -it -v $(pwd)/:/data rmlio/yarrrml-parser:latest -i /data/mappings/kym.siblings.media.frames.yaml >> mappings/kym.siblings.media.frames.yaml.ttl
+docker run --rm -it -v $(pwd)/:/data rmlio/yarrrml-parser:latest -i /data/mappings/kym.types.media.frames.yaml >> mappings/kym.types.media.frames.yaml.ttl

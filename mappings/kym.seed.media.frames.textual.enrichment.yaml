@@ -12,7 +12,7 @@ prefixes:
 mappings:
   spotlight:
     sources:
-      - ['data/kym.seed.media.frames.textual.enrichment.json~jsonpath', '$[*]']
+      - ['notebooks/data/kym.seed.media.frames.textual.enrichment.json~jsonpath', '$[*]']
     s: $(url)
     po: 
       # - [dbp:confidence, $(@confidence)]
@@ -20,7 +20,7 @@ mappings:
         o: $(Resources[*].QID~iri)
   tags:
     sources:
-      - ['data/kym.seed.media.frames.tags.enrichment.json~jsonpath', '$[*]']
+      - ['notebooks/data/kym.seed.media.frames.tags.enrichment.json~jsonpath', '$[*]']
     s: $(url)
     po: 
       # - [dbp:confidence, $(@confidence)]

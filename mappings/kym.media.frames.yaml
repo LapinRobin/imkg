@@ -12,7 +12,7 @@ prefixes:
 mappings:
   kym:
     sources:
-      - ['data/kym.media.frames.json~jsonpath', '$[*]']
+      - ['notebooks/data/kym.media.frames.json~jsonpath', '$[*]']
     s: $(url)
     po:
       - [a, kym:$(category)~iri]
