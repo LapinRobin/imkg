@@ -23,27 +23,29 @@ new_full_kym_dag = DAG(
     schedule_interval=None,
 )
 
-#file_sensor = FileSensor(
+# file_sensor = FileSensor(
 #    task_id="file_sensor",
 #    filepath="/opt/airflow/data/raw.json",
 #    fs_conn_id="fs_default",
 #    poke_interval=30,
 #    dag=new_full_kym_dag,
-#)
+# )
 
-#insert_json_file_task = MongoDBInsertJSONFileOperator(
+# insert_json_file_task = MongoDBInsertJSONFileOperator(
 #    task_id="insert_json_file_into_mongodb",
 #    mongo_conn_id="mongodb_default",  # Connection ID for MongoDB
 #    database="memes",
 #    collection="raw_memes",
 #    filepath="/opt/airflow/data/raw.json",
 #    dag=new_full_kym_dag,
-#)
+# )
+
 
 def save2json(filename, dump):
     out_file = open(filename, "w")
     json.dump(dump, out_file, indent=6)
     out_file.close()
+
 
 def extractFromMongo():
     # MongoDB connection details
@@ -147,18 +149,27 @@ join_tasks_enrich = DummyOperator(
 )
 
 generate_turtle_files_text_enrich = DockerOperator(
-    task_id='generate_turtle_files_text_enrich',
-    image='rmlio/yarrrml-parser:latest',  # Docker image name and tag
-    command='--rm -it -v $(pwd)/:/data rmlio/yarrrml-parser:latest -i /data/mappings/kym.media.frames.textual.enrichment.yaml >> /data/mappings/kym.media.frames.textual.enrichment.yaml.ttl',
-    api_version='auto',  # You can set the Docker API version if needed
-    auto_remove=True,  # Remove the container after it completes
-    mounts=[Mount(source='/opt/airflow/', target='/data', type='bind')],
+    task_id="generate_turtle_files_text_enrich",
+    api_version="auto",  # You can set the Docker API version if needed
+    docker_url="TCP://docker-socket-proxy:2375",
+    command="-i /data/mappings/kym.media.frames.textual.enrichment.yaml -o /data/mappings/pomme.ttl",
+    # command="cat /data/mappings/kym.media.frames.textual.enrichment.yaml",
+    image="rmlio/yarrrml-parser:latest",  # Docker image name and tag
+    network_mode="host",  # Put Airflow in the same Docker network as the container
+    tty=True,
+    mounts=[
+        Mount(
+            source="/Users/jules/Projects/data-engineering-project",
+            target="/data",
+            type="bind",
+        )
+    ],
     dag=new_full_kym_dag,
 )
 
 end = DummyOperator(task_id="end", dag=new_full_kym_dag, trigger_rule="none_failed")
 
-load_data_from_Mongo >> notebook_cleaning >> notebook_extract_seed 
+load_data_from_Mongo >> notebook_cleaning >> notebook_extract_seed
 (
     notebook_extract_seed
     >> [
