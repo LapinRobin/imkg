@@ -152,19 +152,118 @@ generate_turtle_files_text_enrich = DockerOperator(
     task_id="generate_turtle_files_text_enrich",
     api_version="auto",  # You can set the Docker API version if needed
     docker_url="TCP://docker-socket-proxy:2375",
-    command="-i /data/mappings/kym.media.frames.textual.enrichment.yaml -o /data/mappings/pomme.ttl",
+    command="-i /data/mappings/kym.media.frames.textual.enrichment.yaml -o /data/mappings/kym.media.frames.textual.enrichment.yaml.ttl",
     # command="cat /data/mappings/kym.media.frames.textual.enrichment.yaml",
     image="rmlio/yarrrml-parser:latest",  # Docker image name and tag
     network_mode="host",  # Put Airflow in the same Docker network as the container
     tty=True,
     mounts=[
         Mount(
-            source="/Users/jules/Projects/data-engineering-project",
+            source="/home/wann/INSA/DataEn/PROJECTO/data-engineering-project",
             target="/data",
             type="bind",
         )
     ],
     dag=new_full_kym_dag,
+)
+
+generate_turtle_files_media_frames = DockerOperator(
+    task_id="generate_turtle_files_media_frames",
+    api_version="auto",  # You can set the Docker API version if needed
+    docker_url="TCP://docker-socket-proxy:2375",
+    command="-i /data/mappings/kym.media.frames.yaml -o /data/mappings/kym.media.frames.yaml.ttl",
+    # command="cat /data/mappings/kym.media.frames.textual.enrichment.yaml",
+    image="rmlio/yarrrml-parser:latest",  # Docker image name and tag
+    network_mode="host",  # Put Airflow in the same Docker network as the container
+    tty=True,
+    mounts=[
+        Mount(
+            source="/home/wann/INSA/DataEn/PROJECTO/data-engineering-project",
+            target="/data",
+            type="bind",
+        )
+    ],
+    dag=new_full_kym_dag,
+)
+
+generate_turtle_files_parent = DockerOperator(
+    task_id="generate_turtle_files_parent",
+    api_version="auto",  # You can set the Docker API version if needed
+    docker_url="TCP://docker-socket-proxy:2375",
+    command="-i /data/mappings/kym.parent.media.frames.yaml -o /data/mappings/kym.parent.media.frames.yaml.ttl",
+    # command="cat /data/mappings/kym.media.frames.textual.enrichment.yaml",
+    image="rmlio/yarrrml-parser:latest",  # Docker image name and tag
+    network_mode="host",  # Put Airflow in the same Docker network as the container
+    tty=True,
+    mounts=[
+        Mount(
+            source="/home/wann/INSA/DataEn/PROJECTO/data-engineering-project",
+            target="/data",
+            type="bind",
+        )
+    ],
+    dag=new_full_kym_dag,
+)
+
+generate_turtle_files_children = DockerOperator(
+    task_id="generate_turtle_files_children",
+    api_version="auto",  # You can set the Docker API version if needed
+    docker_url="TCP://docker-socket-proxy:2375",
+    command="-i /data/mappings/kym.children.media.frames.yaml -o /data/mappings/kym.children.media.frames.yaml.ttl",
+    # command="cat /data/mappings/kym.media.frames.textual.enrichment.yaml",
+    image="rmlio/yarrrml-parser:latest",  # Docker image name and tag
+    network_mode="host",  # Put Airflow in the same Docker network as the container
+    tty=True,
+    mounts=[
+        Mount(
+            source="/home/wann/INSA/DataEn/PROJECTO/data-engineering-project",
+            target="/data",
+            type="bind",
+        )
+    ],
+    dag=new_full_kym_dag,
+)
+
+generate_turtle_files_siblings = DockerOperator(
+    task_id="generate_turtle_files_siblings",
+    api_version="auto",  # You can set the Docker API version if needed
+    docker_url="TCP://docker-socket-proxy:2375",
+    command="-i /data/mappings/kym.siblings.media.frames.yaml -o /data/mappings/kym.siblings.media.frames.yaml.ttl",
+    # command="cat /data/mappings/kym.media.frames.textual.enrichment.yaml",
+    image="rmlio/yarrrml-parser:latest",  # Docker image name and tag
+    network_mode="host",  # Put Airflow in the same Docker network as the container
+    tty=True,
+    mounts=[
+        Mount(
+            source="/home/wann/INSA/DataEn/PROJECTO/data-engineering-project",
+            target="/data",
+            type="bind",
+        )
+    ],
+    dag=new_full_kym_dag,
+)
+
+generate_turtle_files_types = DockerOperator(
+    task_id="generate_turtle_files_types",
+    api_version="auto",  # You can set the Docker API version if needed
+    docker_url="TCP://docker-socket-proxy:2375",
+    command="-i /data/mappings/kym.types.media.frames.yaml -o /data/mappings/kym.types.media.frames.yaml.ttl",
+    # command="cat /data/mappings/kym.media.frames.textual.enrichment.yaml",
+    image="rmlio/yarrrml-parser:latest",  # Docker image name and tag
+    network_mode="host",  # Put Airflow in the same Docker network as the container
+    tty=True,
+    mounts=[
+        Mount(
+            source="/home/wann/INSA/DataEn/PROJECTO/data-engineering-project",
+            target="/data",
+            type="bind",
+        )
+    ],
+    dag=new_full_kym_dag,
+)
+
+join_docker_turtle = DummyOperator(
+    task_id="join_docker_turtle", dag=new_full_kym_dag, trigger_rule="none_failed"
 )
 
 end = DummyOperator(task_id="end", dag=new_full_kym_dag, trigger_rule="none_failed")
@@ -181,4 +280,16 @@ load_data_from_Mongo >> notebook_cleaning >> notebook_extract_seed
     >> join_tasks_extracts
 )
 join_tasks_extracts >> notebook_enrich_text >> notebook_enrich_tags >> join_tasks_enrich
-join_tasks_enrich >> generate_turtle_files_text_enrich >> end
+(
+    join_tasks_enrich
+    >> [
+        generate_turtle_files_text_enrich,
+        generate_turtle_files_media_frames,
+        generate_turtle_files_parent,
+        generate_turtle_files_children,
+        generate_turtle_files_siblings,
+        generate_turtle_files_types,
+    ]
+    >> join_docker_turtle
+)
+join_docker_turtle >> end
