@@ -23,24 +23,6 @@ new_full_kym_dag = DAG(
     schedule_interval=None,
 )
 
-# file_sensor = FileSensor(
-#    task_id="file_sensor",
-#    filepath="/opt/airflow/data/raw.json",
-#    fs_conn_id="fs_default",
-#    poke_interval=30,
-#    dag=new_full_kym_dag,
-# )
-
-# insert_json_file_task = MongoDBInsertJSONFileOperator(
-#    task_id="insert_json_file_into_mongodb",
-#    mongo_conn_id="mongodb_default",  # Connection ID for MongoDB
-#    database="memes",
-#    collection="raw_memes",
-#    filepath="/opt/airflow/data/raw.json",
-#    dag=new_full_kym_dag,
-# )
-
-
 def save2json(filename, dump):
     out_file = open(filename, "w")
     json.dump(dump, out_file, indent=6)
@@ -266,6 +248,12 @@ join_docker_turtle = DummyOperator(
     task_id="join_docker_turtle", dag=new_full_kym_dag, trigger_rule="none_failed"
 )
 
+create_nt_files = BashOperator(
+    task_id='create_nt_files',
+    dag=new_full_kym_dag,
+    bash_command="./generate_media_frame.rdf.sh",
+)
+
 end = DummyOperator(task_id="end", dag=new_full_kym_dag, trigger_rule="none_failed")
 
 load_data_from_Mongo >> notebook_cleaning >> notebook_extract_seed
@@ -292,4 +280,4 @@ join_tasks_extracts >> notebook_enrich_text >> notebook_enrich_tags >> join_task
     ]
     >> join_docker_turtle
 )
-join_docker_turtle >> end
+join_docker_turtle >> create_nt_files >> end
