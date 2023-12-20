@@ -11,7 +11,7 @@ default_args = {
 
 # Define the DAG for the Internet Meme Knowledge Graph (IMKG) project.
 dag = airflow.DAG(
-    dag_id="imkg",
+    dag_id="scrap_websites",
     default_args=default_args,
     schedule_interval=None,
 )
@@ -90,6 +90,8 @@ kym_scraper = DockerOperator(
     environment=kym_env,
     dag=dag,
 )
+
+
 
 kym_sync_children = DockerOperator(
     task_id="kym_sync_children",

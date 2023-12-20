@@ -248,12 +248,6 @@ join_docker_turtle = DummyOperator(
     task_id="join_docker_turtle", dag=new_full_kym_dag, trigger_rule="none_failed"
 )
 
-create_nt_files = BashOperator(
-    task_id='create_nt_files',
-    dag=new_full_kym_dag,
-    bash_command="./generate_media_frame.rdf.sh",
-)
-
 end = DummyOperator(task_id="end", dag=new_full_kym_dag, trigger_rule="none_failed")
 
 load_data_from_Mongo >> notebook_cleaning >> notebook_extract_seed
@@ -280,4 +274,4 @@ join_tasks_extracts >> notebook_enrich_text >> notebook_enrich_tags >> join_task
     ]
     >> join_docker_turtle
 )
-join_docker_turtle >> create_nt_files >> end
+join_docker_turtle >> end
