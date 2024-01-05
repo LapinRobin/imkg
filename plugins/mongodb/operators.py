@@ -30,7 +30,8 @@ class MongoDBUpdateOperator(BaseOperator):
             # Update documents
             documents = collection.find(self.filter)
             for document in documents:
-                collection.update_one(document, self.update(document))
+                updated_document = self.update(document)
+                collection.replace_one({"_id": document["_id"]}, updated_document)
         except Exception as e:
             print(f"Error connecting to MongoDB -- {e}")
             exit(1)
