@@ -6,11 +6,16 @@ from airflow.operators.dummy_operator import DummyOperator
 from mongodb.operators import MongoDBInsertJSONFileOperator, MongoDBUpdateOperator
 
 default_args = {
-    "descriptions": "A DAG demonstrating custom MongoDB operators",
     "retries": 0,
 }
 
-with DAG("mongodb_examples", start_date=datetime.now(), default_args=default_args, tags=["mongodb", "example"]):
+with DAG(
+    "mongodb_examples",
+    description="A DAG demonstrating custom MongoDB operators",
+    start_date=datetime.now(),
+    default_args=default_args,
+    tags=["mongodb", "example"],
+):
     start_task = DummyOperator(task_id="start_task")
 
     insert_json_file_task = MongoDBInsertJSONFileOperator(
