@@ -10,7 +10,13 @@ class MongoDBUpdateOperator(BaseOperator):
     """
 
     def __init__(
-        self, conn_id: str, database: str, collection: str, filter: str, update, **kwargs
+        self,
+        conn_id: str,
+        database: str,
+        collection: str,
+        filter: str,
+        update,
+        **kwargs,
     ):
         super().__init__(**kwargs)
         self.conn_id = conn_id
