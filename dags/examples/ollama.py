@@ -40,7 +40,7 @@ with DAG(
     tags=["ollama", "example"],
 ):
     get_models_task = PythonOperator(
-        task_id="get_models", # host.docker.internal resolve to host, only tested on Mac
+        task_id="get_models",  # host.docker.internal resolve to host, only tested on Mac
         python_callable=lambda: print(get_models("host.docker.internal:11434")),
     )
 
