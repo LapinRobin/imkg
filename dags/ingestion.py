@@ -1,4 +1,4 @@
-from mongo.operators import MongoDBInsertOperator, MongoDBInsertJSONFileOperator
+from mongodb.operators import MongoDBInsertJSONFileOperator
 from airflow.sensors.filesystem import FileSensor
 import airflow.utils as utils
 from airflow import DAG
@@ -21,7 +21,7 @@ with DAG('ingestion', default_args=default_args, schedule_interval=None) as dag:
 
     insert_json_file_task = MongoDBInsertJSONFileOperator(
         task_id='insert_json_file_into_mongodb',
-        mongo_conn_id='mongodb_default',  # Connection ID for MongoDB
+        conn_id='mongodb_default',  # Connection ID for MongoDB
         database='airflow',
         collection='raw_memes',
         filepath='/opt/airflow/data/raw.json',
