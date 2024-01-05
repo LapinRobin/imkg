@@ -18,11 +18,12 @@ with DAG("mongodb_examples", start_date=datetime.now(), default_args=default_arg
         conn_id="mongodb_default",  # Connection ID for MongoDB
         database="airflow",
         collection="examples",
-        filepath="/opt/airflow/data/test.json",
+        filepath="/opt/airflow/data/examples/mongodb.json",
     )
 
     def update_function(document):
         document["last_updated"] = datetime.now()
+        return document
 
     update_task = MongoDBUpdateOperator(
         task_id="update",
