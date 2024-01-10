@@ -39,9 +39,17 @@ start_task = DummyOperator(task_id='start_task', dag=imkg_offline)
 
 # Task to insert JSON data into MongoDB
 insert_kym_into_mongodb = PythonOperator(
-    task_id='insert_into_mongodb',
+    task_id='insert_kym_into_mongodb',
     python_callable=insert_json_into_mongo,
     op_args=['/opt/airflow/notebooks/baseData/imkg.kym.json', 'mongodb://mongo:27017', 'imkg', 'kym'],
+    dag=imkg_offline,
+)
+
+# Task to insert JSON data into MongoDB
+insert_kym_into_imgflip = PythonOperator(
+    task_id='insert_kym_into_imgflip',
+    python_callable=insert_json_into_mongo,
+    op_args=['/opt/airflow/notebooks/baseData/imkg.imgflip.json', 'mongodb://mongo:27017', 'imkg', 'imgflip'],
     dag=imkg_offline,
 )
 
@@ -69,6 +77,23 @@ def extractFromMongo():
             document.pop("_id")
 
     save2json("/opt/airflow/notebooks/data/raw_data.json", data)
+
+    client.close()
+
+    collection_name = "imgflip"
+
+    # Retreive dataset
+    client = pymongo.MongoClient(mongo_uri)
+    db = client[database_name]
+    collection = db[collection_name]
+
+    data = list(collection.find())
+
+    for document in data:
+        if "_id" in document:
+            document.pop("_id")
+
+    save2json("/opt/airflow/notebooks/data/raw_imgflip_data.json", data)
 
     client.close()
 
@@ -272,7 +297,7 @@ join_docker_turtle = DummyOperator(
 
 end = DummyOperator(task_id="end", dag=imkg_offline, trigger_rule="none_failed")
 
-start_task >> insert_kym_into_mongodb >> load_data_from_Mongo
+start_task >> insert_kym_into_mongodb >> insert_kym_into_imgflip >> load_data_from_Mongo
 load_data_from_Mongo >> notebook_cleaning >> notebook_extract_seed
 (
     notebook_extract_seed

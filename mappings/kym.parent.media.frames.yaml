@@ -12,13 +12,13 @@ prefixes:
 mappings:
   kym:
     sources:
-      - [notebooks/data/kym.parent.media.frames.csv~csv]
+      - [/opt/airflow/notebooks/data/kym.parent.media.frames.csv~csv]
     s: $(meme)
     po:
       - [skos:broader, $(parent)~iri]
   kym2:
     sources:
-      - [notebooks/data/kym.parent.media.frames.csv~csv]
+      - [/opt/airflow/notebooks/data/kym.parent.media.frames.csv~csv]
     s: $(parent)
     po:
       - [skos:narrower, $(meme)~iri]

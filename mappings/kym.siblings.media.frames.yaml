@@ -12,7 +12,7 @@ prefixes:
 mappings:
   kym:
     sources:
-      - [data/kym.siblings.media.frames.csv~csv]
+      - [/opt/airflow/data/kym.siblings.media.frames.csv~csv]
     s: $(meme)
     po:
       - [rdfs:seeAlso, $(siblings)~iri]

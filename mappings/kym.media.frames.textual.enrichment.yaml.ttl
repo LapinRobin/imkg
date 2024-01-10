@@ -23,7 +23,7 @@
     void:exampleResource :map_spotlight_000.
 :map_spotlight_000 rml:logicalSource :source_000.
 :source_000 a rml:LogicalSource;
-    rml:source "notebooks/data/kym.media.frames.textual.enrichment.json";
+    rml:source "/opt/airflow/notebooks/data/kym.media.frames.textual.enrichment.json";
     rml:iterator "$[*]";
     rml:referenceFormulation ql:JSONPath.
 :map_spotlight_000 a rr:TriplesMap;
@@ -43,7 +43,7 @@
 :rules_000 void:exampleResource :map_tags_000.
 :map_tags_000 rml:logicalSource :source_001.
 :source_001 a rml:LogicalSource;
-    rml:source "notebooks/data/kym.media.frames.tags.enrichment.json";
+    rml:source "/opt/airflow/notebooks/data/kym.media.frames.tags.enrichment.json";
     rml:iterator "$[*]";
     rml:referenceFormulation ql:JSONPath.
 :map_tags_000 a rr:TriplesMap;

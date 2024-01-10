@@ -26,7 +26,8 @@ generate_rdf = DAG(
 create_nt_files = BashOperator(
     task_id='create_nt_files',
     dag=generate_rdf,
-    bash_command="/opt/airflow/generate_media_frame.rdf.sh ",
+    bash_command="java -jar /opt/airflow/mappings/mapper.jar -m /opt/airflow/mappings/kym.media.frames.yaml.ttl -o /opt/airflow/mappings/rdf/full/kym.media.frames.nt",
 )
-
+#/opt/airflow/generate_media_frame.rdf.sh
+#java -jar /opt/airflow/mapper.jar -m /opt/airflow/mappings/kym.media.frames.yaml.ttl -o /opt/airflow/mappings/rdf/full/kym.media.frames.nt 
 create_nt_files

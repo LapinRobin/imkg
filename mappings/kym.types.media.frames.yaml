@@ -14,7 +14,7 @@ prefixes:
 mappings:
   kym:
     sources:
-      - [notebooks/data/kym.types.media.frames.csv~csv]
+      - [/opt/airflow/notebooks/data/kym.types.media.frames.csv~csv]
     s: $(meme)
     po:
       - [a, $(type)~iri]

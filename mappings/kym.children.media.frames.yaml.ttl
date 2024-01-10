@@ -23,7 +23,7 @@
     void:exampleResource :map_kym_000.
 :map_kym_000 rml:logicalSource :source_000.
 :source_000 a rml:LogicalSource;
-    rml:source "notebooks/data/kym.children.media.frames.csv";
+    rml:source "/opt/airflow/notebooks/data/kym.children.media.frames.csv";
     rml:referenceFormulation ql:CSV.
 :map_kym_000 a rr:TriplesMap;
     rdfs:label "kym".
@@ -42,7 +42,7 @@
 :rules_000 void:exampleResource :map_kym2_000.
 :map_kym2_000 rml:logicalSource :source_001.
 :source_001 a rml:LogicalSource;
-    rml:source "notebooks/data/kym.children.media.frames.csv";
+    rml:source "/opt/airflow/notebooks/data/kym.children.media.frames.csv";
     rml:referenceFormulation ql:CSV.
 :map_kym2_000 a rr:TriplesMap;
     rdfs:label "kym2".

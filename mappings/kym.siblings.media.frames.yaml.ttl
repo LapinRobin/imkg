@@ -23,7 +23,7 @@
     void:exampleResource :map_kym_000.
 :map_kym_000 rml:logicalSource :source_000.
 :source_000 a rml:LogicalSource;
-    rml:source "data/kym.siblings.media.frames.csv";
+    rml:source "/opt/airflow/data/kym.siblings.media.frames.csv";
     rml:referenceFormulation ql:CSV.
 :map_kym_000 a rr:TriplesMap;
     rdfs:label "kym".

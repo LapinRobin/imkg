@@ -12,7 +12,7 @@ prefixes:
 mappings:
   kym:
     sources:
-      - ['notebooks/data/kym.media.frames.json~jsonpath', '$[*]']
+      - ['/opt/airflow/notebooks/data/kym.media.frames.json~jsonpath', '$[*]']
     s: $(url)
     po:
       - [a, kym:$(category)~iri]
