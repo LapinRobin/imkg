@@ -56,9 +56,18 @@ For transforming the data, we use multiple files, namely `notebook/Extract_Child
 
 ## Enhancing
 
-We're also planning enhancements for the dataset, making it more robust and insightful. Updates will be provided soon.
+For enhancing the data, we use the files `notebook/Enrich_Tags.ipynb.ipynb` and `notebook/Enrich_Text.ipynb.ipynb`, to enrich the data with Dbpedia Spotlight data to improve our dataset.
+We have not yet implemented the enriching of the vision of our dataset with the GoogleApi since we did not have the means to pay for the service.
 
-## Enhancing
+## Production
+
+Now that we have the dataset, we can use the tool Virtuoso to query it and try and answer the introduction questions we formulated in the introduction (link to the tool on our github : https://github.com/meme-schievous/virtuoso).
+
+We also used Neo4j to have a visual representation of the different graphs and query the graph :
+
+![Graph overview](KymGraph.png)
+
+## Futur improvements
 
 We're also planning enhancements for the dataset, making it more robust and insightful. Updates will be provided soon.
 
