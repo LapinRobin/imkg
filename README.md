@@ -9,7 +9,10 @@ Welcome to the Memes Data Engineering Project! This repository is dedicated to t
 3. [Cleansing](#cleansing)
 4. [Transforming](#transforming)
 5. [Enhancing](#enhancing)
-6. [Getting Started](#getting-started)
+6. [Production](#production)
+7. [Futur improvements](#futur-improvements)
+8. [Project Submission Checklist](#project-submission-checklist)
+9. [How to use](#how-to-use)
 
 ## Introduction
 
@@ -71,7 +74,19 @@ We also used Neo4j to have a visual representation of the different graphs and q
 
 We're also planning enhancements for the dataset, making it more robust and insightful. Updates will be provided soon.
 
-## Getting Started
+## Project Submission Checklist
+
+- [x] Repository with the code, well documented
+- [x] Docker-compose file to run the environment
+- [x] Detailed description of the various steps
+- [x] Report with the project design steps divided per area
+- [x] Example dataset: the project testing should work offline, i.e., you need to have some sample data points.
+- [x] Slides for the project presentation. You can do them too in markdown too.
+- [x] Use airflow + pandas + mongodb + postgres + neo4j
+- [x] Using REDIS for speeding up steps
+- [x] Launching docker containers via airflow
+
+## How to use
 
 If you'd like to run the code for this project, follow these steps:
 
