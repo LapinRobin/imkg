@@ -1,15 +1,27 @@
 # Data Engineering Project: Memes
 
-Welcome to the Memes Data Engineering Project! This repository is dedicated to the pipeline that ingests, cleanses, transforms, and enhances raw meme data from Know Your Meme. Additionally, it provides queries to analyze the meme dataset.
+Welcome to the Memes Data Engineering Project! This repository is dedicated to the pipeline that ingests, cleanses, transforms, and enhances raw meme data from Know Your Meme, Imgflip and Wikidata.
 
 ## Table of Contents
 
-1. [Ingesting](#ingesting)
-2. [Cleansing](#cleansing)
-3. [Transforming](#transforming)
-4. [Enhancing](#enhancing)
-5. [Queries](#queries)
+1. [Introduction](#introduction)
+2. [Ingesting](#ingesting)
+3. [Cleansing](#cleansing)
+4. [Transforming](#transforming)
+5. [Enhancing](#enhancing)
 6. [Getting Started](#getting-started)
+
+## Introduction
+
+Questions formulated for analyzing the meme dataset:
+
+1. **Top 3 movies which generated the most memes**: Find out which movies have produced the most memes in our dataset.
+
+2. **Is there more animals than humans used in memes?**: Discover whether animals are more prevalent than humans in memes.
+
+## Pipeline
+
+![Pipeline overview](Pipeline.png)
 
 ## Ingesting
 
@@ -27,13 +39,9 @@ Stay tuned! We're actively developing the data transformation process to prepare
 
 We're also planning enhancements for the dataset, making it more robust and insightful. Updates will be provided soon.
 
-## Queries
+## Enhancing
 
-We offer the following queries for analyzing the meme dataset:
-
-1. **Top 3 movies which generated the most memes**: Find out which movies have produced the most memes in our dataset.
-
-2. **Is there more animals than humans used in memes?**: Discover whether animals are more prevalent than humans in memes.
+We're also planning enhancements for the dataset, making it more robust and insightful. Updates will be provided soon.
 
 ## Getting Started
 
