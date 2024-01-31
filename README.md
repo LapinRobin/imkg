@@ -39,7 +39,14 @@ https://github.com/meme-schievous/imgflip-scraper
 
 ## Cleansing
 
-In this stage, we're currently working on the cleansing process to ensure the data is of high quality. Check back here soon for more updates!
+For wrangling the data, we use different operators in airflow :
+
+| OPERATORS         | URL DOCUMENTATION                                                                                        |
+| ----------------- | -------------------------------------------------------------------------------------------------------- |
+| PythonOperator    | https://airflow.apache.org/docs/apache-airflow/stable/howto/operator/python.html                         |
+| PapermillOperator | https://airflow.apache.org/docs/apache-airflow/1.10.10/howto/operator/papermill.html                     |
+| DockerOperator    | https://airflow.apache.org/docs/apache-airflow/1.10.10/_api/airflow/operators/docker_operator/index.html |
+| BashOperator      | https://airflow.apache.org/docs/apache-airflow/stable/howto/operator/bash.html                           |
 
 ## Transforming
 
