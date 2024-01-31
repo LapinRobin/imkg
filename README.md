@@ -25,7 +25,15 @@ Questions formulated for analyzing the meme dataset:
 
 ## Ingesting
 
-In the initial phase of our data engineering project, we set up a pipeline to bring raw meme data into our landing zone, which is a MongoDB database. The raw data is sourced from a file named `kym_raw_data`, which is extracted from the Know Your Meme website.
+In the initial phase of our data engineering project, we set up a pipeline to bring raw meme data into our landing zone, which is a MongoDB database. To do this, we created two scraper to collect data from KnowYourMeme and Imgflip.
+
+The `KYM_Scraper` and `Imgflip_Scraper` are `scrapy` projects that scrapes the Know Your Meme and Imgflip websites for memes and their associated data.
+The scrapper use a `Redis` database to store the URLs to be scraped and store the scraped data in a `MongoDB` database.
+Relationships between memes (e.g. parent-child) are stored in a `PostgreSQL` database before updating the `MongoDB` documents.
+
+Here is the link to the tools : 
+https://github.com/meme-schievous/kym-scrapper
+https://github.com/meme-schievous/imgflip-scraper
 
 ## Cleansing
 
