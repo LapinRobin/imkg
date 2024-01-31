@@ -32,7 +32,9 @@ The scrapper use a `Redis` database to store the URLs to be scraped and store th
 Relationships between memes (e.g. parent-child) are stored in a `PostgreSQL` database before updating the `MongoDB` documents.
 
 Here is the link to the tools : 
+
 https://github.com/meme-schievous/kym-scrapper
+
 https://github.com/meme-schievous/imgflip-scraper
 
 ## Cleansing
