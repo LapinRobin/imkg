@@ -12,4 +12,4 @@ USER airflow
 
 # Install additional python packages
 ADD requirements.txt . 
-RUN pip install apache-airflow==2.7.2 -r requirements.txt
+RUN pip install apache-airflow==2.8.1 -r requirements.txt

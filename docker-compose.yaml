@@ -82,6 +82,7 @@ x-airflow-common:
     - ${AIRFLOW_PROJ_DIR:-.}/plugins:/opt/airflow/plugins
     - ${AIRFLOW_PROJ_DIR:-.}/data:/opt/airflow/data
     - ${AIRFLOW_PROJ_DIR:-.}/notebooks:/opt/airflow/notebooks
+    - ${AIRFLOW_PROJ_DIR:-.}/mappings:/opt/airflow/mappings
   user: "${AIRFLOW_UID:-50000}:0"
   mem_limit: 4GB
   depends_on: &airflow-common-depends-on
