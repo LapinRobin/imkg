@@ -17,40 +17,102 @@ from docker.types import Mount
 default_args = {"start_date": utils.dates.days_ago(0), "concurrency": 1, "retries": 0}
 
 # Generate the DAG
-imkg_offline = DAG(
-    dag_id="imkg_offline",
+imkg_online = DAG(
+    dag_id="imkg_online",
     default_args=default_args,
     schedule_interval=None,
 )
 
-# Function to insert JSON data into MongoDB
-def insert_json_into_mongo(json_file_path, mongo_uri, database, collection):
-    with open(json_file_path, 'r') as file:
-        json_data = json.load(file)
 
-    client = pymongo.MongoClient(mongo_uri)
-    db = client[database]
-    col = db[collection]
-    # Insert each document from the JSON data
-    for document in json_data:
-        col.insert_one(document)
+NUMBER_OF_PAGES = 1
 
-start_task = DummyOperator(task_id='start_task', dag=imkg_offline)
+# Define the tasks for Imgflip scraping.
+imgflip_env = {
+    "MONGO_DB": "imkg",
+    "MONGO_COLLECTION": "imgflip",
+}
 
-# Task to insert JSON data into MongoDB
-insert_kym_into_mongodb = PythonOperator(
-    task_id='insert_kym_into_mongodb',
-    python_callable=insert_json_into_mongo,
-    op_args=['/opt/airflow/notebooks/baseData/imkg.kym.json', 'mongodb://mongo:27017', 'imkg', 'kym'],
-    dag=imkg_offline,
+imgflip_redis_init = DockerOperator(
+    task_id="imgflip_redis_init",
+    image="imgflip-scraper",
+    command=f"scrapy feed {NUMBER_OF_PAGES}",
+    docker_url="TCP://docker-socket-proxy:2375",
+    network_mode="host",
+    environment=imgflip_env,
+    dag=imkg_online,
 )
 
-# Task to insert JSON data into MongoDB
-insert_kym_into_imgflip = PythonOperator(
-    task_id='insert_kym_into_imgflip',
-    python_callable=insert_json_into_mongo,
-    op_args=['/opt/airflow/notebooks/baseData/imkg.imgflip.json', 'mongodb://mongo:27017', 'imkg', 'imgflip'],
-    dag=imkg_offline,
+imgflip_scraper_bootstrap = DockerOperator(
+    task_id="imgflip_scraper_bootstrap",
+    image="imgflip-scraper",
+    command=f"scrapy crawl bootstrap",
+    docker_url="TCP://docker-socket-proxy:2375",
+    network_mode="host",
+    environment=imgflip_env,
+    dag=imkg_online,
+)
+
+imgflip_scraper = DockerOperator(
+    task_id="imgflip_scraper",
+    image="imgflip-scraper",
+    command=f"scrapy crawl templates",
+    docker_url="TCP://docker-socket-proxy:2375",
+    network_mode="host",
+    environment=imgflip_env,
+    dag=imkg_online,
+)
+
+# Define the tasks for KnowYourMeme scraping.
+kym_env = {
+    "MONGO_DB": "imkg",
+    "MONGO_COLLECTION": "kym",
+    "POSTGRES_DB": "airflow",
+    "POSTGRES_USER": "airflow",
+    "POSTGRES_PASSWORD": "airflow",
+}
+
+kym_redis_init = DockerOperator(
+    task_id="kym_redis_init",
+    image="kym-scraper",
+    command=f"scrapy feed {NUMBER_OF_PAGES}",
+    docker_url="TCP://docker-socket-proxy:2375",
+    network_mode="host",
+    environment=kym_env,
+    dag=imkg_online,
+)
+
+kym_scraper_bootstrap = DockerOperator(
+    task_id="kym_scraper_bootstrap",
+    image="kym-scraper",
+    command=f"scrapy crawl bootstrap",
+    docker_url="TCP://docker-socket-proxy:2375",
+    network_mode="host",
+    environment=kym_env,
+    dag=imkg_online,
+)
+
+kym_scraper = DockerOperator(
+    task_id="kym_scraper",
+    image="kym-scraper",
+    command=f"scrapy crawl memes",
+    docker_url="TCP://docker-socket-proxy:2375",
+    network_mode="host",
+    environment=kym_env,
+    dag=imkg_online,
+)
+
+kym_sync_children = DockerOperator(
+    task_id="kym_sync_children",
+    image="kym-scraper",
+    command=f"scrapy sync_children",
+    docker_url="TCP://docker-socket-proxy:2375",
+    network_mode="host",
+    environment=kym_env,
+    dag=imkg_online,
+)
+
+join_scrapping = DummyOperator(
+    task_id="join_scrapping", dag=imkg_online, trigger_rule="none_failed"
 )
 
 def save2json(filename, dump):
@@ -100,7 +162,7 @@ def extractFromMongo():
 
 load_data_from_Mongo = PythonOperator(
     task_id="load_data_from_Mongo",
-    dag=imkg_offline,
+    dag=imkg_online,
     python_callable=extractFromMongo,
     trigger_rule="all_success",
 )
@@ -109,7 +171,7 @@ notebook_cleaning = PapermillOperator(
     task_id="notebook_cleaning",
     input_nb="/opt/airflow/notebooks/Cleaning.ipynb",
     output_nb="/opt/airflow/notebooks/Cleaning.ipynb",
-    dag=imkg_offline,
+    dag=imkg_online,
     trigger_rule="all_success",
 )
 
@@ -117,7 +179,7 @@ notebook_extract_seed = PapermillOperator(
     task_id="notebook_extract_seed",
     input_nb="/opt/airflow/notebooks/Extract_Seed.ipynb",
     output_nb="/opt/airflow/notebooks/Extract_Seed.ipynb",
-    dag=imkg_offline,
+    dag=imkg_online,
     trigger_rule="all_success",
 )
 
@@ -125,7 +187,7 @@ notebook_extract_sibling = PapermillOperator(
     task_id="notebook_extract_sibling",
     input_nb="/opt/airflow/notebooks/Extract_Sibling.ipynb",
     output_nb="/opt/airflow/notebooks/Extract_Sibling.ipynb",
-    dag=imkg_offline,
+    dag=imkg_online,
     trigger_rule="all_success",
 )
 
@@ -133,7 +195,7 @@ notebook_extract_parent = PapermillOperator(
     task_id="notebook_extract_parent",
     input_nb="/opt/airflow/notebooks/Extract_Parent.ipynb",
     output_nb="/opt/airflow/notebooks/Extract_Parent.ipynb",
-    dag=imkg_offline,
+    dag=imkg_online,
     trigger_rule="all_success",
 )
 
@@ -141,7 +203,7 @@ notebook_extract_children = PapermillOperator(
     task_id="notebook_extract_children",
     input_nb="/opt/airflow/notebooks/Extract_Children.ipynb",
     output_nb="/opt/airflow/notebooks/Extract_Children.ipynb",
-    dag=imkg_offline,
+    dag=imkg_online,
     trigger_rule="all_success",
 )
 
@@ -149,19 +211,19 @@ notebook_extract_taxonomy = PapermillOperator(
     task_id="notebook_extract_taxonomy",
     input_nb="/opt/airflow/notebooks/Extract_Taxonomy.ipynb",
     output_nb="/opt/airflow/notebooks/Extract_Taxonomy.ipynb",
-    dag=imkg_offline,
+    dag=imkg_online,
     trigger_rule="all_success",
 )
 
 join_tasks_extracts = DummyOperator(
-    task_id="join_tasks_extracts", dag=imkg_offline, trigger_rule="none_failed"
+    task_id="join_tasks_extracts", dag=imkg_online, trigger_rule="none_failed"
 )
 
 notebook_enrich_text = PapermillOperator(
     task_id="notebook_enrich_text",
     input_nb="/opt/airflow/notebooks/Enrich_Text.ipynb",
     output_nb="/opt/airflow/notebooks/Enrich_Text.ipynb",
-    dag=imkg_offline,
+    dag=imkg_online,
     trigger_rule="all_success",
 )
 
@@ -169,12 +231,12 @@ notebook_enrich_tags = PapermillOperator(
     task_id="notebook_enrich_tags",
     input_nb="/opt/airflow/notebooks/Enrich_Tags.ipynb",
     output_nb="/opt/airflow/notebooks/Enrich_Tags.ipynb",
-    dag=imkg_offline,
+    dag=imkg_online,
     trigger_rule="all_success",
 )
 
 join_tasks_enrich = DummyOperator(
-    task_id="join_tasks_enrich", dag=imkg_offline, trigger_rule="none_failed"
+    task_id="join_tasks_enrich", dag=imkg_online, trigger_rule="none_failed"
 )
 
 generate_turtle_files_text_enrich = DockerOperator(
@@ -193,7 +255,7 @@ generate_turtle_files_text_enrich = DockerOperator(
             type="bind",
         )
     ],
-    dag=imkg_offline,
+    dag=imkg_online,
 )
 
 generate_turtle_files_media_frames = DockerOperator(
@@ -212,7 +274,7 @@ generate_turtle_files_media_frames = DockerOperator(
             type="bind",
         )
     ],
-    dag=imkg_offline,
+    dag=imkg_online,
 )
 
 generate_turtle_files_parent = DockerOperator(
@@ -231,7 +293,7 @@ generate_turtle_files_parent = DockerOperator(
             type="bind",
         )
     ],
-    dag=imkg_offline,
+    dag=imkg_online,
 )
 
 generate_turtle_files_children = DockerOperator(
@@ -250,7 +312,7 @@ generate_turtle_files_children = DockerOperator(
             type="bind",
         )
     ],
-    dag=imkg_offline,
+    dag=imkg_online,
 )
 
 generate_turtle_files_siblings = DockerOperator(
@@ -269,7 +331,7 @@ generate_turtle_files_siblings = DockerOperator(
             type="bind",
         )
     ],
-    dag=imkg_offline,
+    dag=imkg_online,
 )
 
 generate_turtle_files_types = DockerOperator(
@@ -288,7 +350,7 @@ generate_turtle_files_types = DockerOperator(
             type="bind",
         )
     ],
-    dag=imkg_offline,
+    dag=imkg_online,
 )
 
 generate_turtle_files_imgflip = DockerOperator(
@@ -307,62 +369,64 @@ generate_turtle_files_imgflip = DockerOperator(
             type="bind",
         )
     ],
-    dag=imkg_offline,
+    dag=imkg_online,
 )
 
 join_docker_turtle = DummyOperator(
-    task_id="join_docker_turtle", dag=imkg_offline, trigger_rule="none_failed"
+    task_id="join_docker_turtle", dag=imkg_online, trigger_rule="none_failed"
 )
 
 create_nt_files_media_frame = BashOperator(
     task_id='create_nt_files_media_frame',
-    dag=imkg_offline,
+    dag=imkg_online,
     bash_command="java -jar /opt/airflow/mappings/mapper.jar -m /opt/airflow/mappings/kym.media.frames.yaml.ttl -o /opt/airflow/mappings/rdf/full/kym.media.frames.nt",
 )
 
 create_nt_files_parent = BashOperator(
     task_id='create_nt_files_parent',
-    dag=imkg_offline,
+    dag=imkg_online,
     bash_command="java -jar /opt/airflow/mappings/mapper.jar -m /opt/airflow/mappings/kym.parent.media.frames.yaml.ttl -o /opt/airflow/mappings/rdf/full/kym.parent.media.frames.nt",
 )
 
 create_nt_files_children = BashOperator(
     task_id='create_nt_files_children',
-    dag=imkg_offline,
+    dag=imkg_online,
     bash_command="java -jar /opt/airflow/mappings/mapper.jar -m /opt/airflow/mappings/kym.children.media.frames.yaml.ttl -o /opt/airflow/mappings/rdf/full/kym.children.media.frames.nt",
 )
 
 create_nt_files_siblings = BashOperator(
     task_id='create_nt_files_siblings',
-    dag=imkg_offline,
+    dag=imkg_online,
     bash_command="java -jar /opt/airflow/mappings/mapper.jar -m /opt/airflow/mappings/kym.siblings.media.frames.yaml.ttl -o /opt/airflow/mappings/rdf/full/kym.siblings.frames.nt",
 )
 
 create_nt_files_types = BashOperator(
     task_id='create_nt_files_types',
-    dag=imkg_offline,
+    dag=imkg_online,
     bash_command="java -jar /opt/airflow/mappings/mapper.jar -m /opt/airflow/mappings/kym.types.media.frames.yaml.ttl -o /opt/airflow/mappings/rdf/full/kym.types.media.frames.nt",
 )
 
 create_nt_files_textual_enrich = BashOperator(
     task_id='create_nt_files_textual_enrich',
-    dag=imkg_offline,
+    dag=imkg_online,
     bash_command="java -jar /opt/airflow/mappings/mapper.jar -m /opt/airflow/mappings/kym.media.frames.textual.enrichment.yaml.ttl -o /opt/airflow/mappings/rdf/full/kym.textual.enrichment.media.frames.nt",
 )
 
 create_nt_files_imgflip = BashOperator(
     task_id='create_nt_files_imgflip',
-    dag=imkg_offline,
+    dag=imkg_online,
     bash_command="java -jar /opt/airflow/mappings/mapper.jar -m /opt/airflow/mappings/imgflip.yaml.ttl -o /opt/airflow/mappings/rdf/full/imgflip.nt",
 )
 
 join_nt_files = DummyOperator(
-    task_id="join_nt_files", dag=imkg_offline, trigger_rule="none_failed"
+    task_id="join_nt_files", dag=imkg_online, trigger_rule="none_failed"
 )
 
-end = DummyOperator(task_id="end", dag=imkg_offline, trigger_rule="none_failed")
+end = DummyOperator(task_id="end", dag=imkg_online, trigger_rule="none_failed")
 
-start_task >> insert_kym_into_mongodb >> insert_kym_into_imgflip >> load_data_from_Mongo
+imgflip_redis_init >> imgflip_scraper_bootstrap >> imgflip_scraper >> join_scrapping
+kym_redis_init >> kym_scraper_bootstrap >> kym_scraper >> kym_sync_children >> join_scrapping
+join_scrapping  >> load_data_from_Mongo
 load_data_from_Mongo >> notebook_cleaning >> notebook_extract_seed
 (
     notebook_extract_seed

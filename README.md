@@ -46,6 +46,7 @@ If you'd like to run the code for this project, follow these steps:
    ```bash
    mkdir -p ./dags ./logs ./plugins ./config
    echo -e "AIRFLOW_UID=$(id -u)" > .env
+   docker compose build
    docker compose up airflow-init
    docker compose -f docker-compose.yaml up
    ```

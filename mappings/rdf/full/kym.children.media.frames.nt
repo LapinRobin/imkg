@@ -1,0 +1,12 @@
+<https://knowyourmeme.com/memes/chad> <http://www.w3.org/2004/02/skos/core#broader> <https://knowyourmeme.com/memes/gigachad>.
+<https://knowyourmeme.com/memes/chad> <http://www.w3.org/2004/02/skos/core#broader> <https://knowyourmeme.com/memes/gigachad>.
+<https://knowyourmeme.com/memes/meme-man> <http://www.w3.org/2004/02/skos/core#broader> <https://knowyourmeme.com/memes/meme-man-wurds-stonks-edits>.
+<https://knowyourmeme.com/memes/meme-man> <http://www.w3.org/2004/02/skos/core#broader> <https://knowyourmeme.com/memes/meme-man-wurds-stonks-edits>.
+<https://knowyourmeme.com/memes/wojak> <http://www.w3.org/2004/02/skos/core#broader> <https://knowyourmeme.com/memes/i-know-that-feel-bro>.
+<https://knowyourmeme.com/memes/wojak> <http://www.w3.org/2004/02/skos/core#broader> <https://knowyourmeme.com/memes/i-know-that-feel-bro>.
+<https://knowyourmeme.com/memes/gigachad> <http://www.w3.org/2004/02/skos/core#narrower> <https://knowyourmeme.com/memes/chad>.
+<https://knowyourmeme.com/memes/gigachad> <http://www.w3.org/2004/02/skos/core#narrower> <https://knowyourmeme.com/memes/chad>.
+<https://knowyourmeme.com/memes/meme-man-wurds-stonks-edits> <http://www.w3.org/2004/02/skos/core#narrower> <https://knowyourmeme.com/memes/meme-man>.
+<https://knowyourmeme.com/memes/meme-man-wurds-stonks-edits> <http://www.w3.org/2004/02/skos/core#narrower> <https://knowyourmeme.com/memes/meme-man>.
+<https://knowyourmeme.com/memes/i-know-that-feel-bro> <http://www.w3.org/2004/02/skos/core#narrower> <https://knowyourmeme.com/memes/wojak>.
+<https://knowyourmeme.com/memes/i-know-that-feel-bro> <http://www.w3.org/2004/02/skos/core#narrower> <https://knowyourmeme.com/memes/wojak>.
