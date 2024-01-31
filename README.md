@@ -34,7 +34,6 @@ Relationships between memes (e.g. parent-child) are stored in a `PostgreSQL` dat
 Here is the link to the tools : 
 
 https://github.com/meme-schievous/kym-scrapper
-
 https://github.com/meme-schievous/imgflip-scraper
 
 ## Cleansing
@@ -48,9 +47,12 @@ For wrangling the data, we use different operators in airflow :
 | DockerOperator    | https://airflow.apache.org/docs/apache-airflow/1.10.10/_api/airflow/operators/docker_operator/index.html |
 | BashOperator      | https://airflow.apache.org/docs/apache-airflow/stable/howto/operator/bash.html                           |
 
+Then, for cleaning the data, we use the file `notebook/Cleaning.ipynb` and the operator `PapermillOperator` to run the file.
+It  cleans both KYM data, by removing non-meme data type, removing duplicated fields and grouping content text, and Imgflip data, by changing URL structure.
+
 ## Transforming
 
-Stay tuned! We're actively developing the data transformation process to prepare the meme data for further analysis. 
+For transforming the data, we use multiple files, namely `notebook/Extract_Children.ipynb`, `notebook/Extract_Parent.ipynb`, `notebook/Extract_Sibling.ipynb`, `notebook/Extract_Taxonomy.ipynb` and `notebook/Extract_Seed.ipynb` (THis one is only used to get the seed memes from Wikidata). With those files, we actually extract all the children, parents, siblings and taxonomy of memes to then use them later for the graph.
 
 ## Enhancing
 
