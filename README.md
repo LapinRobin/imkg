@@ -72,7 +72,9 @@ We also used Neo4j to have a visual representation of the different graphs and q
 
 ## Futur improvements
 
-We're also planning enhancements for the dataset, making it more robust and insightful. Updates will be provided soon.
+- Adding vision enrichment with GoogleApi with updated data.
+
+- Refine the scrapping to have the option to scrap a given list of memes.
 
 ## Project Submission Checklist
 
@@ -88,7 +90,7 @@ We're also planning enhancements for the dataset, making it more robust and insi
 
 ## How to use
 
-If you'd like to run the code for this project, follow these steps:
+If you'd like to run the code for this project **OFFLINE**, follow these steps:
 
 1. Make sure you have Docker installed.
 
@@ -101,4 +103,40 @@ If you'd like to run the code for this project, follow these steps:
    docker compose up airflow-init
    docker compose -f docker-compose.yaml up
    ```
+
+3. Go to http://localhost:8080/ (Username: airflow | Password: airflow)
+
+4. Launch the dag : **imkg_offline.py**
+
+If you'd like to run the code for this project **ONLINE**, follow these steps:
+
+1. Make sure you have Docker installed.
+
+2. Run the following commands:
+
+   ```bash
+   mkdir -p ./dags ./logs ./plugins ./config
+   echo -e "AIRFLOW_UID=$(id -u)" > .env
+   docker compose build
+   docker compose up airflow-init
+   ```
+
+3. Run other commands to initialize the scrappers:
+
+   ```bash
+   docker build -t kym-scraper scraping/kym-scrapper
+   docker build -t imgflip-scraper scraping/imgflip-scraper
+   ```
+
+4. Run: 
+
+   ```bash
+   docker compose -f docker-compose.yaml up
+   ```
+
+5. Go to http://localhost:8080/ (Username: airflow | Password: airflow)
+
+6. Launch the dag : **imkg_online.py**
+
+If you'd like to run the code only the scrappers to gather data, follow the steps for the **ONLINE** dag, but on step 6, use the **imkg.py** dag.
 
