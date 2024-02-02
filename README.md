@@ -36,8 +36,8 @@ Relationships between memes (e.g. parent-child) are stored in a `PostgreSQL` dat
 
 Here is the link to the tools : 
 
-https://github.com/meme-schievous/kym-scrapper
-https://github.com/meme-schievous/imgflip-scraper
+- https://github.com/meme-schievous/kym-scrapper
+- https://github.com/meme-schievous/imgflip-scraper
 
 ## Cleansing
 
@@ -66,14 +66,13 @@ We have not yet implemented the enriching of the vision of our dataset with the 
 
 Now that we have the dataset, we can use the tool Virtuoso to query it and try and answer the introduction questions we formulated in the introduction (link to the tool on our github : https://github.com/meme-schievous/virtuoso).
 
-We also used Neo4j to have a visual representation of the different graphs and query the graph :
+We also imported the tuples into a Neo4J instance to have a visual representation of the resulting graph.
 
 ![Graph overview](KymGraph.png)
 
 ## Futur improvements
 
 - Adding vision enrichment with GoogleApi with updated data.
-
 - Refine the scrapping to have the option to scrap a given list of memes.
 
 ## Project Submission Checklist
