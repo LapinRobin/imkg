@@ -1,4 +1,4 @@
-FROM apache/airflow
+FROM apache/airflow:2.8.0
 
 # Install a java runtime environment
 USER root
@@ -12,4 +12,4 @@ USER airflow
 
 # Install additional python packages
 ADD requirements.txt . 
-RUN pip install apache-airflow==2.7.2 -r requirements.txt
+RUN pip install apache-airflow==2.8.0 -r requirements.txt
