@@ -378,11 +378,11 @@ docker_env = {
 
 feed_to_redis = DockerOperator(
     task_id="feed_to_redis",
-    api_version="1.37",
-    docker_url="TCP://docker-socket-proxy:2375",
-    command="python kym_scraper/utils/feed.py",
     image="kym-scraper",
+    command="scrapy feed 1",
+    docker_url="TCP://docker-socket-proxy:2375",
     network_mode="host",
+    mount_tmp_dir=False,
     environment=docker_env,
     dag=kym_dag,
 )
